@@ -1,0 +1,64 @@
+6a + 9b + 20c = n
+n =  50
+a: 2   b: 2   c: 1
+a: 5   b: 0   c: 1
+This number of McNuggets can be bought in exact quantity.
+n =  51
+a: 1   b: 5   c: 0
+a: 4   b: 3   c: 0
+a: 7   b: 1   c: 0
+This number of McNuggets can be bought in exact quantity.
+n =  52
+a: 2   b: 0   c: 2
+This number of McNuggets can be bought in exact quantity.
+n =  53
+a: 1   b: 3   c: 1
+a: 4   b: 1   c: 1
+This number of McNuggets can be bought in exact quantity.
+n =  54
+n is the multiple of 6
+This number of McNuggets can be bought in exact quantity.
+n =  55
+a: 1   b: 1   c: 2
+This number of McNuggets can be bought in exact quantity.
+n =  56
+a: 0   b: 4   c: 1
+a: 3   b: 2   c: 1
+a: 6   b: 0   c: 1
+This number of McNuggets can be bought in exact quantity.
+n =  57
+a: 2   b: 5   c: 0
+a: 5   b: 3   c: 0
+a: 8   b: 1   c: 0
+This number of McNuggets can be bought in exact quantity.
+n =  58
+a: 0   b: 2   c: 2
+a: 3   b: 0   c: 2
+This number of McNuggets can be bought in exact quantity.
+n =  59
+a: 2   b: 3   c: 1
+a: 5   b: 1   c: 1
+This number of McNuggets can be bought in exact quantity.
+n =  60
+n is the multiple of 20
+This number of McNuggets can be bought in exact quantity.
+n =  61
+a: 2   b: 1   c: 2
+This number of McNuggets can be bought in exact quantity.
+n =  62
+a: 1   b: 4   c: 1
+a: 4   b: 2   c: 1
+a: 7   b: 0   c: 1
+This number of McNuggets can be bought in exact quantity.
+n =  63
+n is the multiple of 9
+This number of McNuggets can be bought in exact quantity.
+n =  64
+a: 1   b: 2   c: 2
+a: 4   b: 0   c: 2
+This number of McNuggets can be bought in exact quantity.
+n =  65
+a: 0   b: 5   c: 1
+a: 3   b: 3   c: 1
+a: 6   b: 1   c: 1
+This number of McNuggets can be bought in exact quantity.
