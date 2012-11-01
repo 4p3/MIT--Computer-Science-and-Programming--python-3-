@@ -228,6 +228,10 @@ def get_words_to_points(word_list):
 	
 	
 def pick_best_word(hand,points_dict):
+	best_word = ""
+	hand_temp = hand.copy()
+	possible_words = []
+	possible_answers = {}
 	return None
 
 	
