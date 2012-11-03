@@ -227,18 +227,37 @@ def get_words_to_points(word_list):
 	return words_with_points
 	
 	
+def hand_to_list(hand):
+	temp = hand.copy()
+	list = []
+	for character in temp.keys():
+		while temp[character] > 0:
+			list.append(character)
+			temp[character] -= 1
+	return list
+	
+	
+def possible_answers(list_hand):
+	possib_answers = []
+	indic = len(list_hand)
+	while indic >= 2:
+		for tup_panswer in list(itertools.permutations(list_hand,indic)):
+			panswer = ''
+			for char in tup_panswer:
+				panswer += char
+			possib_answers.append(panswer)
+		indic -= 1
+	return possib_answers
+	
+	
 def pick_best_word(hand,points_dict):
-	best_word = ""
-	hand_temp = hand.copy()
-	possible_words = []
-	possible_answers = {}
 	return None
 
 	
 #main
-if __name__ == '__main__':
-	word_list = load_words()
-	points_dict = get_words_to_points(word_list)
-	play_game(word_list)
+# if __name__ == '__main__':
+	# word_list = load_words()
+	# points_dict = get_words_to_points(word_list)
+	# play_game(word_list)
 	
 	
