@@ -5,6 +5,7 @@
 import random
 import string
 import time
+import itertools
 
 #helper code
 
@@ -166,7 +167,8 @@ def play_hand(hand, word_list, time_limit):
 	while len(hand) > 0:
 		display_hand(hand)
 		start_time = time.time()
-		solve = str(input("Please enter a word, that you have formed using the letters above. You can finish by entering a single period (.) and hitting enter."))
+		#solve = str(input("Please enter a word, that you have formed using the letters above. You can finish by entering a single period (.) and hitting enter."))
+		solve = pick_best_word(hand, points_dict, hand_size)
 		end_time = time.time()
 		total_time = round(end_time - start_time, 3)
 		time_taken += total_time
@@ -180,6 +182,7 @@ def play_hand(hand, word_list, time_limit):
 				print('You have ', round((time_limit - total_time),3),' seconds remaining.')
 		else:
 			update_hand(hand, solve)
+			print("Your word '", solve,"' is real word!")
 			print('It took you ', total_time, 'seconds to provide an answer.')
 			if (time_limit - total_time) >= 0:
 				print('You have ', round((time_limit - total_time),3),' seconds remaining.')
@@ -250,14 +253,31 @@ def possible_answers(list_hand):
 	return possib_answers
 	
 	
-def pick_best_word(hand,points_dict):
-	return None
-
+def filter_realwords(list_hand,n):
+	words_w_scores = {}
+	for possib_word in list_hand:
+		if possib_word not in points_dict:
+			list_hand.remove(possib_word)
+		else:
+			words_w_scores.update({possib_word : get_word_score(possib_word, n, 1)})
+	return words_w_scores
 	
+	
+def pick_best_word(hand, points_dict, hand_size):
+	words_w_points = filter_realwords(possible_answers(hand_to_list(hand)), hand_size)
+	if len(words_w_points) != 0:
+		max_point = max(words_w_points.values())
+		for word in words_w_points.keys():
+			if words_w_points[word] == max_point:
+				return word
+	else:
+		return '.'
+				
+
 #main
-# if __name__ == '__main__':
-	# word_list = load_words()
-	# points_dict = get_words_to_points(word_list)
-	# play_game(word_list)
+if __name__ == '__main__':
+	word_list = load_words()
+	points_dict = get_words_to_points(word_list)
+	play_game(word_list)
 	
 	
