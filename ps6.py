@@ -1,4 +1,4 @@
-#problem set 5
+#problem set 6
 #name: c4nn1b4l
 
 
@@ -177,7 +177,7 @@ def play_hand(hand, word_list, time_limit):
 		if solve == ".":
 			return None
 		elif not (is_valid_word(solve, hand, points_dict)):
-			print('This is not a valid word, please choose another one.')
+			print(solve, ' is not a valid word, please choose another one.')
 			if (time_limit - total_time) >= 0:
 				print('You have ', round((time_limit - total_time),3),' seconds remaining.')
 		else:
@@ -198,7 +198,7 @@ def play_hand(hand, word_list, time_limit):
 	
 	
 # Problem #5: Playing a game
-def play_game(word_list):
+def play_game(word_list, points_dict):
 	#Allow the user to play an arbitrary number of hands.
 	#	* Asks the user to input 'n' or 'r' or 'e'.
 	#	* If the user inputs 'n', let the user play a new (random) hand. When done playing the hand, ask the 'n' or 'e' question again.
@@ -209,7 +209,8 @@ def play_game(word_list):
 	while True:
 		cmd = str(input('Enter n to deal a new hand, r to replay the last hand, or e to end game: '))
 		if cmd == 'n':
-			time_limit = int(input("Enter time limit, in seconds, for players:"))
+			time_limit = 5
+			print('The time limit is ', time_limit, ' seconds.')
 			hand = deal_hand(hand_size)
 			play_hand(hand.copy(), word_list, time_limit)
 			print()
@@ -224,60 +225,113 @@ def play_game(word_list):
 			
 			
 def get_words_to_points(word_list):
+	#Creates dictionary from the word_list. Assigns points to words.
+	
+	#word_list: list of words
+	#returns: dictionary
 	words_with_points = {}
 	for word in word_list:
 		words_with_points.update({word : get_word_score(word, hand_size, 1)})
 	return words_with_points
 	
 	
-def hand_to_list(hand):
-	temp = hand.copy()
-	list = []
-	for character in temp.keys():
-		while temp[character] > 0:
-			list.append(character)
-			temp[character] -= 1
-	return list
+# def hand_to_list(hand):
+	# #Converts hand to list (from dictionary). (To simplify permutation.)
+	
+	# #hand: dictionary
+	# #returns: list
+	# temp = hand.copy()
+	# list = []
+	# for character in temp.keys():
+		# while temp[character] > 0:
+			# list.append(character)
+			# temp[character] -= 1
+	# return list
 	
 	
-def possible_answers(list_hand):
-	possib_answers = []
-	indic = len(list_hand)
-	while indic >= 2:
-		for tup_panswer in list(itertools.permutations(list_hand,indic)):
-			panswer = ''
-			for char in tup_panswer:
-				panswer += char
-			possib_answers.append(panswer)
-		indic -= 1
-	return possib_answers
+# def possible_answers(list_hand):
+	# #Creates all the possible permutations of list_hands elements.
+	# #Size: from 2 to len(list_hand)
+	
+	# #list_hand: list
+	# #returns: list
+	# possib_answers = []
+	# indic = len(list_hand)
+	# while indic >= 2:
+		# for tup_panswer in list(itertools.permutations(list_hand,indic)):
+			# panswer = ''
+			# for char in tup_panswer:
+				# panswer += char
+			# possib_answers.append(panswer)
+		# indic -= 1
+	# return possib_answers
 	
 	
-def filter_realwords(list_hand,n):
-	words_w_scores = {}
-	for possib_word in list_hand:
-		if possib_word not in points_dict:
-			list_hand.remove(possib_word)
-		else:
-			words_w_scores.update({possib_word : get_word_score(possib_word, n, 1)})
-	return words_w_scores
+# def filter_realwords(list_hand,n):
+	# #Filters real words from the permutated list. Assigns expected points to each filtered (existing) word.
+	
+	# #list_hand: list
+	# #n: size of hand (characters dealt to player)
+	# #returns: dictionary
+	# words_w_scores = {}
+	# for possib_word in list_hand:
+		# if possib_word not in points_dict:
+			# list_hand.remove(possib_word)
+		# else:
+			# words_w_scores.update({possib_word : get_word_score(possib_word, n, 1)})
+	# return words_w_scores
 	
 	
 def pick_best_word(hand, points_dict, hand_size):
-	words_w_points = filter_realwords(possible_answers(hand_to_list(hand)), hand_size)
-	if len(words_w_points) != 0:
-		max_point = max(words_w_points.values())
-		for word in words_w_points.keys():
-			if words_w_points[word] == max_point:
+	#Return the highest scoring word from points_dict that can be made with the given hand.
+	#Return '.' if no words can be made with the given hand.
+
+	#hand: dictionary
+	#points_dict: dictionary
+	#returns: string
+	answers = {}
+	for word in points_dict.keys():
+		wogo = True
+		for char in word:
+			if char in hand:
+				if word.count(char) > hand.get(char, 0):
+					wogo = False
+			elif char not in hand:
+				wogo = False
+		if wogo:
+			answers.update({word : get_word_score(word, hand_size, 1)})
+		
+	if len(answers) != 0:
+		max_point = max(answers.values())
+		for word in answers.keys():
+			if answers[word] == max_point:
 				return word
 	else:
 		return '.'
-				
+		
+
+# def get_time_limit(points_dict, k):
+	# Return the time limit for the computer player as a function of the multiplier k.
+	# points_dict should be the same dictionary that is created by get_words_to_points.
+
+	# start_time = time.time()
+	# Do some computation. The only purpose of the computation is so we can figure out how long your computer takes to perform a known task.
+	# for word in points_dict.keys():
+		# test = []
+		# get_frequency_dict(word)
+		# get_word_score(word, hand_size,1)
+		# for char in word:
+			# test += char
+			# itertools.permutations(test)
+		# end_time = time.time()
+		# print('start time:',start_time,'end time', end_time)
+		# return (end_time - start_time) * k 
+
 
 #main
 if __name__ == '__main__':
 	word_list = load_words()
 	points_dict = get_words_to_points(word_list)
-	play_game(word_list)
+	play_game(word_list, points_dict)
 	
 	
