@@ -76,7 +76,7 @@ def display_hand(hand):
 	
 	for letter in hand.keys():
 		for j in range(hand[letter]):
-			print(letter, )
+			print(letter, end=' ')
 	print()
 	
 	
@@ -168,7 +168,8 @@ def play_hand(hand, word_list, time_limit):
 		display_hand(hand)
 		start_time = time.time()
 		#solve = str(input("Please enter a word, that you have formed using the letters above. You can finish by entering a single period (.) and hitting enter."))
-		solve = pick_best_word(hand, points_dict, hand_size)
+		#solve = pick_best_word(hand, points_dict, hand_size)
+		solve = pick_best_word_faster(hand, rearrange_dict, hand_size)
 		end_time = time.time()
 		total_time = round(end_time - start_time, 3)
 		time_taken += total_time
@@ -326,12 +327,46 @@ def pick_best_word(hand, points_dict, hand_size):
 		# end_time = time.time()
 		# print('start time:',start_time,'end time', end_time)
 		# return (end_time - start_time) * k 
+		
+		
 
+def pick_best_word_faster(hand, rearrange_dict, hand_size):
+	str_hand = ''.join(sorted(hand))
+	seek = ''
+	poss_answers = {}
+	if str_hand in rearrange_dict:
+		return rearrange_dict[str_hand]
+	for char in str_hand:
+		seek += char
+		if seek in rearrange_dict and len(seek) > 2:
+			poss_answers.update({ rearrange_dict[seek] : get_word_score(rearrange_dict[seek], hand_size, 1) })
+	if len(poss_answers) != 0:
+		max_point = max(poss_answers.values())
+		for solut in poss_answers.keys():
+			if poss_answers[solut] == max_point:
+				return solut
+	else:
+		return '.'
+		
+	
+	
+def get_word_rearrangement(word_list):
+	rearrange_dict = {}
+	for word in word_list:
+		rearr = sorted(word)
+		cword = ""
+		for char in rearr:
+			cword += char
+		rearrange_dict.update({ cword : word })
+	return rearrange_dict
+		
 
 #main
 if __name__ == '__main__':
 	word_list = load_words()
 	points_dict = get_words_to_points(word_list)
+	rearrange_dict = get_word_rearrangement(word_list)
 	play_game(word_list, points_dict)
 	
 	
+#the first (brute force) solution was exponencial, this implementation is linear (i guess)
