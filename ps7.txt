@@ -1,0 +1,83 @@
+#problem set 7
+#name: c4nn1b4l
+
+def fact0(i): 
+	#this looks like a linear function, as O(n).
+	#reursiveley calls itself n times -> runtime and resource usage depends simpy on the magnitude of n
+	assert type(i) == int and i >= 0 
+	if i == 0 or i == 1: 
+		return 1 
+	return i * fact0(i-1) 
+	
+
+def fact1(i): 
+	#another linear function, simply because the number of iterations depends on the input
+	assert type(i) == int and i >= 0 
+	res = 1 
+	while i > 1: 
+		res = res * i 
+		i -= 1 
+	return res
+
+
+def makeSet(s): 
+	#linear, the for cycle walks through every character of the input string >> runtime depends on the length of that string
+	assert type(s) == str 
+	res = '' 
+	for c in s: 
+		if not c in res: 
+			res = res + c 
+	return res
+	
+	
+def intersect(s1, s2): 
+	#this one depends on makeset, which is linear, and does a for loop through s1, but that loop does not seem to add much complexity to the function.
+	#it's ~ O(2n), i guess
+	assert type(s1) == str and type(s2) == str 
+	s1 = makeSet(s1) 
+	s2 = makeSet(s2) 
+	res = '' 
+	for e in s1: 
+		if e in s2: 
+			res = res + e 
+	return res 
+	
+	
+def swap0(s1, s2): 
+	assert type(s1) == list and type(s2) == list 
+	tmp = s1[:] 
+	s1 = s2[:] 
+	s2 = tmp 
+	return (s1, s2)
+s1 = [1] 
+s2 = [2] 
+s1, s2 = swap0(s1, s2)
+print(s1, s2)
+#before swap: s1,s2 = [1],[2]
+#in the function, before return: s1,s2,tmp = s2,tmp,s1
+#after the return: s1, s2 = [2], [1]
+
+
+def swap1(s1, s2): 
+	assert type(s1) == list and type(s2) == list 
+	return s2, s1 
+s1 = [3] 
+s2 = [4] 
+s1, s2 = swap1(s1, s2) 
+print(s1, s2)
+#before the swap: s1,s2 = [3],[4]
+#after the swap: s1,s2 = [4], [3]
+
+
+def rev(s): 
+	assert type(s) == list 
+	for i in range(len(s)//2): 
+		tmp = s[i] 
+		s[i] = s[-(i+1)] 
+		s[-(i+1)] = tmp 
+s = [1,2,3] 
+rev(s) 
+print(s) 
+#before the swap: s = [1,2,3]
+#inside the function: s = [3,2,1]
+#after the function call: s = [3,2,1]
