@@ -8,10 +8,11 @@
 import time
 import copy
 
+
 SUBJECT_FILENAME = "subjects.txt"
 VALUE, WORK = 0, 1
 
-#
+
 # Problem 1: Building A Subject Dictionary
 #
 def loadSubjects(filename):
@@ -82,7 +83,7 @@ def cmpRatio(subInfo1, subInfo2):
     work2 = subInfo2[1]
     return float(val1) / work1 > float(val2) / work2
 
-#
+
 # Problem 2: Subject Selection By Greedy Optimization
 #
 def greedyAdvisor(subjects, maxWork, comparator):
@@ -108,7 +109,8 @@ def greedyAdvisor(subjects, maxWork, comparator):
                 maxVal = subji
             elif comparator(subjects[subji], subjects[maxVal]):
                 maxVal = subji
-        #ensuring not to exceed maxWork, i know it's ugly but i got frustrated over a sitcom so i just wanted to make it work
+        #ensuring not to exceed maxWork, i know it's ugly but i got frustrated over a sitcom so i just wanted to make it work, asap
+        #shitty excuse is shitty
         if currentWork <= maxWork:
             if maxVal == "":
                 break
@@ -127,69 +129,81 @@ def greedyAdvisor(subjects, maxWork, comparator):
     return answer
 
 
+def bruteForceAdvisor(subjects, maxWork):
+    """
+    Returns a dictionary mapping subject name to (value, work), which
+    represents the globally optimal selection of subjects using a brute force
+    algorithm.
+
+    subjects: dictionary mapping subject name to (value, work)
+    maxWork: int >= 0
+    returns: dictionary mapping subject name to (value, work)
+    """
+    nameList = list(subjects.keys())
+    tupleList = list(subjects.values())
+    bestSubset, bestSubsetValue = \
+            bruteForceAdvisorHelper(tupleList, maxWork, 0, None, None, [], 0, 0)
+    outputSubjects = {}
+    for i in bestSubset: 
+        outputSubjects[nameList[i]] = tupleList[i]
+    return outputSubjects
+
+def bruteForceAdvisorHelper(subjects, maxWork, i, bestSubset, bestSubsetValue,
+                            subset, subsetValue, subsetWork):
+    # Hit the end of the list.
+    if i >= len(subjects):
+        if bestSubset == None or subsetValue > bestSubsetValue:
+            # Found a new best.
+            return subset[:], subsetValue
+        else:
+            # Keep the current best.
+            return bestSubset, bestSubsetValue
+    else:
+        s = subjects[i]
+        # Try including subjects[i] in the current working subset.
+        if subsetWork + s[WORK] <= maxWork:
+            subset.append(i)
+            bestSubset, bestSubsetValue = bruteForceAdvisorHelper(subjects,
+                    maxWork, i+1, bestSubset, bestSubsetValue, subset,
+                    subsetValue + s[VALUE], subsetWork + s[WORK])
+            subset.pop()
+        bestSubset, bestSubsetValue = bruteForceAdvisorHelper(subjects,
+                maxWork, i+1, bestSubset, bestSubsetValue, subset,
+                subsetValue, subsetWork)
+        return bestSubset, bestSubsetValue
 
 
-print(greedyAdvisor(loadSubjects(SUBJECT_FILENAME),7,cmpValue))
-        
+# Problem 3: Subject Selection By Brute Force
+#
+def timeOutHandler(signum, frame):
+    raise Exception("TimedOut")
 
+def bruteForceTime(subjects, timeOut):
+    """
+    Runs tests on bruteForceAdvisor and measures the time required to compute
+    an answer.
 
-# def bruteForceAdvisor(subjects, maxWork):
-#     """
-#     Returns a dictionary mapping subject name to (value, work), which
-#     represents the globally optimal selection of subjects using a brute force
-#     algorithm.
+    timeOut: the maximum time the function waits for bruteForceAdvisor before terminating
+    """
+    maxWork = 0
+    while True:
+        maxWork += 1
+        startTime = time.time()
+        bruteForceAdvisor(subjects, maxWork)
+        endTime = time.time()
+        print('Maximum work:',maxWork,'time:',(endTime - startTime))
+        if (endTime - startTime) >= timeOut:
+            break
 
-#     subjects: dictionary mapping subject name to (value, work)
-#     maxWork: int >= 0
-#     returns: dictionary mapping subject name to (value, work)
-#     """
-#     nameList = subjects.keys()
-#     tupleList = subjects.values()
-#     bestSubset, bestSubsetValue = \
-#             bruteForceAdvisorHelper(tupleList, maxWork, 0, None, None, [], 0, 0)
-#     outputSubjects = {}
-#     for i in bestSubset:
-#         outputSubjects[nameList[i]] = tupleList[i]
-#     return outputSubjects
+bruteForceTime(loadSubjects(SUBJECT_FILENAME), 20)
 
-# def bruteForceAdvisorHelper(subjects, maxWork, i, bestSubset, bestSubsetValue,
-#                             subset, subsetValue, subsetWork):
-#     # Hit the end of the list.
-#     if i >= len(subjects):
-#         if bestSubset == None or subsetValue > bestSubsetValue:
-#             # Found a new best.
-#             return subset[:], subsetValue
-#         else:
-#             # Keep the current best.
-#             return bestSubset, bestSubsetValue
-#     else:
-#         s = subjects[i]
-#         # Try including subjects[i] in the current working subset.
-#         if subsetWork + s[WORK] <= maxWork:
-#             subset.append(i)
-#             bestSubset, bestSubsetValue = bruteForceAdvisorHelper(subjects,
-#                     maxWork, i+1, bestSubset, bestSubsetValue, subset,
-#                     subsetValue + s[VALUE], subsetWork + s[WORK])
-#             subset.pop()
-#         bestSubset, bestSubsetValue = bruteForceAdvisorHelper(subjects,
-#                 maxWork, i+1, bestSubset, bestSubsetValue, subset,
-#                 subsetValue, subsetWork)
-#         return bestSubset, bestSubsetValue
-
-# #
-# # Problem 3: Subject Selection By Brute Force
-# #
-# def bruteForceTime():
-#     """
-#     Runs tests on bruteForceAdvisor and measures the time required to compute
-#     an answer.
-#     """
-#     # TODO...
-
-# # Problem 3 Observations
-# # ======================
-# #
-# # TODO: write here your observations regarding bruteForceTime's performance
+# Problem 3 Observations
+# ======================
+#
+# Nothing particular. Tried to implement a version, where the function would have terminated the 
+# bruteForceAdvisor when it reached the time limit, but i would have produced a *nix only code,
+# and did not wanted to get an unportable code.
+# Also bruteForceAdvisor runtime grows exponentially.
 
 # #
 # # Problem 4: Subject Selection By Dynamic Programming
