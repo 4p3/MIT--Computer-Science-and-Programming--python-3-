@@ -195,7 +195,7 @@ def bruteForceTime(subjects, timeOut):
         if (endTime - startTime) >= timeOut:
             break
 
-bruteForceTime(loadSubjects(SUBJECT_FILENAME), 20)
+#bruteForceTime(loadSubjects(SUBJECT_FILENAME), 20)
 
 # Problem 3 Observations
 # ======================
@@ -205,32 +205,83 @@ bruteForceTime(loadSubjects(SUBJECT_FILENAME), 20)
 # and did not wanted to get an unportable code.
 # Also bruteForceAdvisor runtime grows exponentially.
 
-# #
-# # Problem 4: Subject Selection By Dynamic Programming
-# #
-# def dpAdvisor(subjects, maxWork):
-#     """
-#     Returns a dictionary mapping subject name to (value, work) that contains a
-#     set of subjects that provides the maximum value without exceeding maxWork.
 
-#     subjects: dictionary mapping subject name to (value, work)
-#     maxWork: int >= 0
-#     returns: dictionary mapping subject name to (value, work)
-#     """
-#     # TODO...
+#
+# Problem 4: Subject Selection By Dynamic Programming
+#
+def dpAdvisor(subjects, maxWork):
+    """
+    Returns a dictionary mapping subject name to (value, work) that contains a
+    set of subjects that provides the maximum value without exceeding maxWork.
 
-# #
-# # Problem 5: Performance Comparison
-# #
-# def dpTime():
-#     """
-#     Runs tests on dpAdvisor and measures the time required to compute an
-#     answer.
-#     """
-#     # TODO...
+    subjects: dictionary mapping subject name to (value, work)
+    maxWork: int >= 0
+    returns: dictionary mapping subject name to (value, work)
+    """
+    memi = {}
+    nameList = list(subjects.keys())
+    valueList = []
+    workList = []
+    for each in subjects:
+        valueList.append(subjects[each][VALUE])
+        workList.append(subjects[each][WORK])
+    answer = {}
+    value, answerList = dpAdvisorHelper(workList, valueList, len(workList) - 1, maxWork, memi)
+    for item in answerList:
+            answer[nameList[item]] = (valueList[item],workList[item])
+    return answer
+
+
+def dpAdvisorHelper(w,v,i,aW,m):    
+    try:
+        return m[(i,aW)]
+    except KeyError:
+        if i == 0:
+            if w[i] < aW:
+                m[(i,aW)] = v[i], [i]
+                return v[i],[i]
+            else:
+                m[(i,aW)] = 0, []
+                return 0,[]
+    without_i, course_list = dpAdvisorHelper(w,v,i-1,aW,m)
+    if w[i] > aW:
+        m[(i,aW)] = without_i, course_list
+        return without_i, course_list
+    else:
+        with_i, course_list_temp = dpAdvisorHelper(w, v, i-1, aW - w[i], m)
+        with_i += v[i]
+    if with_i > without_i:
+        i_value = with_i
+        course_list = [i] + course_list_temp
+    else:
+        i_value = without_i
+    m[(i,aW)] = i_value, course_list
+    return i_value, course_list
+    
+
+#
+# Problem 5: Performance Comparison
+#
+def dpTime(subjects, timeOut):
+    """
+    Runs tests on dpAdvisor and measures the time required to compute an
+    answer.
+    """
+    maxWork = 0
+    while True:
+        maxWork += 1
+        startTime = time.time()
+        dpAdvisor(subjects, maxWork)
+        endTime = time.time()
+        print('Maximum work:',maxWork,'time:',(endTime - startTime))
+        if (endTime - startTime) >= timeOut:
+            break
+
+
+bruteForceTime(loadSubjects(SUBJECT_FILENAME), 60)
+dpTime(loadSubjects(SUBJECT_FILENAME), 60)
 
 # # Problem 5 Observations
 # # ======================
 # #
-# # TODO: write here your observations regarding dpAdvisor's performance and
-# # how its performance compares to that of bruteForceAdvisor.
+# # WOW, that's fast! :)

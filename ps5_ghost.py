@@ -5,7 +5,7 @@ import random
 import string
 
 # helper code start here
-wordlist_filename = "F:\Programozas\Tanulos\python\mit\words.txt"
+wordlist_filename = "D:\Code\mit-introduction-to-computer-science-and-programming-python-3\words.txt"
 
 def load_words():
 	#Returns a list of valid words. Words are strings of lowercase letters.
