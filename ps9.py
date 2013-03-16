@@ -4,6 +4,7 @@
 # Collaborators:
 # Time:
 
+import re
 from string import *
 
 class Shape(object):
@@ -57,7 +58,7 @@ class Circle(Shape):
 # Problem 1: Create the Triangle class
 #
 ## TO DO: Implement the `Triangle` class, which also extends `Shape`.
-class Triangle(shape):
+class Triangle(Shape):
     def __init__(self, base, height):
         """
         base: base of the triangle
@@ -77,7 +78,19 @@ class Triangle(shape):
         Two triangles are equal if they have the same base and same height
         other: object to check for equality
         """
-        return type(other) == Traingle and self.height == other.height and self.radius == other.radius
+        return type(other) == Triangle and self.height == other.height and self.radius == other.radius
+
+
+def getTypeAndSizes(ob):
+    answer = ()
+    numeri = []
+    answer.append(type(ob))
+    for i in str(ob).split():
+        try:
+            numeri.append(float(i))
+        except ValueError:
+            pass
+    return answer
 
 
 #
@@ -89,29 +102,81 @@ class Triangle(shape):
 class ShapeSet:
     def __init__(self):
         """
-        Initialize any needed variables
+        Initialize needed variables
         """
-        ## TO DO
+        self.shapeSizes = []
+        self.shapeTypes = []
+        self.shapeAreas = []
+        self.shapeTypesAndSizes = []
+    def checkDuplicate(self, sh):
+        if len(self.shapeSizes) == 0:
+            return False
+        elif str(sh) in self.shapeSizes:
+            return True
+        else:
+            return False
     def addShape(self, sh):
         """
         Add shape sh to the set; no two shapes in the set may be
         identical
         sh: shape to be added
         """
-        ## TO DO
+        #check for shapes
+        if type(sh)!= Shape:
+            raise TypeError('not a shape')
+        #check if shape is in the set alredy
+        elif checkDuplicate(sh):
+            raise ValueError('duplicate')
+        else:
+            self.shapeSizes.append(str(sh))
+            self.shapeTypes.append(type(sh))
+            self.shapeAreas.appens(sh.area())
+            self.shapeTypesAndSizes(getTypeAndSizes(sh))
     def __iter__(self):
         """
         Return an iterator that allows you to iterate over the set of
         shapes, one shape at a time
         """
-        ## TO DO
+        self.place = 0
+        return self
+    def __next__(self):
+        if self.place >= len(self.names):
+            raise StopIteration
+        self.place += 1
+        return self.shapeTypesAndSizes[self.place-1]
     def __str__(self):
         """
         Return the string representation for a set, which consists of
         the string representation of each shape, categorized by type
         (circles, then squares, then triangles)
         """
-        ## TO DO
+        circles = []
+        squares = []
+        triangles = []
+        ite = 0
+        for item in self.shapeTypes:
+            if item == Circle:
+                circles.append(self.shapeSizes[ite])
+                ite += 1
+            elif item == Square:
+                squares.append(self.shapeSizes[ite])
+                ite += 1
+            elif item == Triangle:
+                triangles.append(self.shapeSizes[ite])
+                ite += 1
+            else:
+                pass
+        answer = []
+        for ans in circles:
+            answer.append(ans)
+            answer.append(\n)
+        for ans in squares:
+            answer.append(ans)
+            answer.append(\n)
+        for ans in triangles:
+            answer.append(ans)
+            answer.append(\n)
+        return answer
         
 #
 # Problem 3: Find the largest shapes in a ShapeSet
