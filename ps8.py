@@ -13,6 +13,10 @@ SUBJECT_FILENAME = "subjects.txt"
 VALUE, WORK = 0, 1
 
 
+measuredDataBrute = open('ps8measuredbrute.txt', 'w')
+measuredDataDp = open('ps8measureddp.txt', 'w')
+
+
 # Problem 1: Building A Subject Dictionary
 #
 def loadSubjects(filename):
@@ -189,9 +193,13 @@ def bruteForceTime(subjects, timeOut):
     while True:
         maxWork += 1
         startTime = time.time()
+        # print(maxWork, bruteForceAdvisor(subjects, maxWork))
         bruteForceAdvisor(subjects, maxWork)
         endTime = time.time()
-        print('Maximum work:',maxWork,'time:',(endTime - startTime))
+        # print('Maximum work:',maxWork,'time:',(endTime - startTime))
+        otime = endTime - startTime
+        result = str(maxWork) + ',' + str(otime) + '\n'
+        measuredDataBrute.write(result)
         if (endTime - startTime) >= timeOut:
             break
 
@@ -271,15 +279,17 @@ def dpTime(subjects, timeOut):
     while True:
         maxWork += 1
         startTime = time.time()
+        # print(maxWork, dpAdvisor(subjects, maxWork))
         dpAdvisor(subjects, maxWork)
         endTime = time.time()
-        print('Maximum work:',maxWork,'time:',(endTime - startTime))
+        # print('Maximum work:',maxWork,'time:',(endTime - startTime))
+        otime = endTime - startTime
+        result = str(maxWork) + ',' + str(otime) + '\n'
+        measuredDataDp.write(result)
         if (endTime - startTime) >= timeOut:
             break
 
 
-bruteForceTime(loadSubjects(SUBJECT_FILENAME), 60)
-dpTime(loadSubjects(SUBJECT_FILENAME), 60)
 
 # # Problem 5 Observations
 # # ======================
