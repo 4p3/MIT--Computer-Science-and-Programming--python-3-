@@ -70,7 +70,7 @@ class Triangle(Shape):
         """
         returns are of the trianlge
         """
-        return (base * height)/2
+        return (self.base * self.height)/2
     def __str__(self):
         return 'Triangle with base length ' + str(self.height) + ' and height ' + str(self.height)
     def __eq__(self, other):
@@ -82,7 +82,7 @@ class Triangle(Shape):
 
 
 def getTypeAndSizes(ob):
-    answer = ()
+    answer = []
     numeri = []
     answer.append(type(ob))
     for i in str(ob).split():
@@ -121,17 +121,13 @@ class ShapeSet:
         identical
         sh: shape to be added
         """
-        #check for shapes
-        if type(sh)!= Shape:
-            raise TypeError('not a shape')
-        #check if shape is in the set alredy
-        elif checkDuplicate(sh):
+        if self.checkDuplicate(sh):
             raise ValueError('duplicate')
         else:
             self.shapeSizes.append(str(sh))
             self.shapeTypes.append(type(sh))
-            self.shapeAreas.appens(sh.area())
-            self.shapeTypesAndSizes(getTypeAndSizes(sh))
+            self.shapeAreas.append(sh.area())
+            self.shapeTypesAndSizes.append(getTypeAndSizes(sh))
     def __iter__(self):
         """
         Return an iterator that allows you to iterate over the set of
@@ -169,14 +165,27 @@ class ShapeSet:
         answer = []
         for ans in circles:
             answer.append(ans)
-            answer.append(\n)
+            answer.append('\n')
         for ans in squares:
             answer.append(ans)
-            answer.append(\n)
+            answer.append('\n')
         for ans in triangles:
             answer.append(ans)
-            answer.append(\n)
-        return answer
+            answer.append('\n')
+        return str(answer)
+
+
+a = Circle(2.5)
+b = Square(4.1)
+c = Triangle(2.4,7.3)
+
+d = ShapeSet()
+d.addShape(a)
+d.addShape(b)
+d.addShape(b)
+d.addShape(c)
+
+print(d)
         
 #
 # Problem 3: Find the largest shapes in a ShapeSet
