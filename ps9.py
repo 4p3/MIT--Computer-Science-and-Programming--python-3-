@@ -1,8 +1,7 @@
 # 6.00 Problem Set 9
 #
-# Name:
-# Collaborators:
-# Time:
+# Name: c4nn1b4l
+# Time: about 2 hours
 
 import re
 from string import *
@@ -72,7 +71,7 @@ class Triangle(Shape):
         """
         return (self.base * self.height)/2
     def __str__(self):
-        return 'Triangle with base length ' + str(self.height) + ' and height ' + str(self.height)
+        return 'Triangle with base length ' + str(self.base) + ' and height ' + str(self.height)
     def __eq__(self, other):
         """
         Two triangles are equal if they have the same base and same height
@@ -104,6 +103,7 @@ class ShapeSet:
         """
         Initialize needed variables
         """
+        self.shapez = []
         self.shapeSizes = []
         self.shapeTypes = []
         self.shapeAreas = []
@@ -128,6 +128,7 @@ class ShapeSet:
             self.shapeTypes.append(type(sh))
             self.shapeAreas.append(sh.area())
             self.shapeTypesAndSizes.append(getTypeAndSizes(sh))
+            self.shapez.append(sh)
     def __iter__(self):
         """
         Return an iterator that allows you to iterate over the set of
@@ -165,13 +166,10 @@ class ShapeSet:
         answer = []
         for ans in circles:
             answer.append(ans)
-            answer.append('\n')
         for ans in squares:
             answer.append(ans)
-            answer.append('\n')
         for ans in triangles:
             answer.append(ans)
-            answer.append('\n')
         return str(answer)
 
 
@@ -181,7 +179,6 @@ c = Triangle(2.4,7.3)
 
 d = ShapeSet()
 d.addShape(a)
-d.addShape(b)
 d.addShape(b)
 d.addShape(c)
 
@@ -196,7 +193,18 @@ def findLargest(shapes):
        largest area.
     shapes: ShapeSet
     """
-    ## TO DO
+    if type(shapes) != ShapeSet:
+        raise TypeError('not a shapeset')
+    else:
+        answer = []
+        maximum = max(shapes.shapeAreas)
+        for she in shapes.shapez:
+            if she.area() == maximum:
+                answer.append(she)
+            else:
+                pass
+        return tuple(answer)
+
 
 #
 # Problem 4: Read shapes from a file into a ShapeSet
@@ -207,5 +215,25 @@ def readShapesFromFile(filename):
     Creates and returns a ShapeSet with the shapes found.
     filename: string
     """
-    ## TO DO
+    try:
+        textfile = open(filename,"r")
+    except FileNotFoundError:
+        print("There is no shapes.txt!")
+        return None
+    readshape = ShapeSet()
+    for line in textfile:
+        obj = (line.rstrip('\n')).split(',')
+        # print(obj)
+        if obj[0] == "circle":
+            component = Circle(float(obj[1]))
+            readshape.addShape(component)
+        elif obj[0] == "square":
+            component = Square(float(obj[1]))
+            readshape.addShape(component)
+        elif obj[0] == "triangle":
+            # print(obj)
+            # print(Triangle(float(obj[1]),float(obj[2])))
+            component = Triangle(float(obj[1]),float(obj[2]))
+            readshape.addShape(component)
+    return readshape
 
