@@ -1,5 +1,5 @@
-import ps10; reload(ps10)
-import wx, Queue
+import ps10;
+import wx, queue
 from wx.lib.newevent import NewEvent
 from ps10 import *
 from threading import Thread

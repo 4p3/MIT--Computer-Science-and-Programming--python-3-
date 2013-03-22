@@ -175,13 +175,15 @@ class Player(object):
         self.points = 0.
         self.idNum = idNum
         self.hand = hand
+
     def getHand(self):
         """
         Return this player's hand.
 
         returns: the Hand object associated with this player.
         """
-        # TODO
+        return self.hand
+
     def addPoints(self, points):
         """
         Add points to this player's total score.
@@ -190,14 +192,16 @@ class Player(object):
 
         postcondition: this player's total score is increased by points
         """
-        # TODO
+        self.points += points
+
     def getPoints(self):
         """
         Return this player's total score.
 
         returns: A float specifying this player's score
         """
-        # TODO
+        return self.points
+
     def getIdNum(self):
         """
         Return this player's ID number (either 1 for player 1 or
@@ -205,7 +209,8 @@ class Player(object):
 
         returns: An integer specifying this player's ID number.
         """
-        # TODO
+        return self.idNum
+
     def __cmp__(self, other):
         """
         Compare players by their scores.
@@ -214,7 +219,13 @@ class Player(object):
         -1 if this player's score is less than other player's score, and 0 if
         they're equal.
         """
-        # TODO
+        if self.points > other.points:
+            return 1
+        elif self.points < other.points:
+            return -1
+        else:
+            return 0
+
     def __str__(self):
         """
         Represent this player as a string
@@ -241,7 +252,19 @@ class ComputerPlayer(Player):
         returns: The best word (a string), given the computer player's hand and
         the wordlist
         """
-        # TODO
+        answers = {}
+        for word in wordlist.getList():
+            wogo = True
+            if self.hand.containsLetters(word):
+                answers.update({word : getWordScore(word)})
+            else:
+                pass
+        if len(answers) != 0:
+            max_point = max(answers.values())
+            for word in answers.keys():
+                if answers[word] == max_point:
+                    return word
+
     def playHand(self, callback, wordlist):
         """
         Play a hand completely by passing chosen words to the callback

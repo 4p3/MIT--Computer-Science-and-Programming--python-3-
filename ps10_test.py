@@ -57,10 +57,10 @@ def testAll():
     print('PROBLEM 2 -----------------------------------------')
     testHand()
 
-    # print 'PROBLEM 3 -----------------------------------------'
-    # testPlayer()
+    print('PROBLEM 3 -----------------------------------------')
+    testPlayer()
 
-    # print 'PROBLEM 4 -----------------------------------------'
-    # testComputerPlayer()
+    print('PROBLEM 4 -----------------------------------------')
+    testComputerPlayer()
 
 testAll()
