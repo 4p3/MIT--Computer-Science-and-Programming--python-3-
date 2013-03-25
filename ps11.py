@@ -156,14 +156,17 @@ class BaseRobot(object):
         room:  a RectangularRoom object.
         speed: a float (speed > 0)
         """
-        # TODO: Your code goes here
+        self.room = room
+        self.speed = speed
+        self.position = room.getRandomPosition()
+        self.direction = random.randrange(359)
     def getRobotPosition(self):
         """
         Return the position of the robot.
 
         returns: a Position object giving the robot's position.
         """
-        # TODO: Your code goes here
+        return self.position
     def getRobotDirection(self):
         """
         Return the direction of the robot.
@@ -171,21 +174,21 @@ class BaseRobot(object):
         returns: an integer d giving the direction of the robot as an angle in
         degrees, 0 <= d < 360.
         """
-        # TODO: Your code goes here
+        return self.direction
     def setRobotPosition(self, position):
         """
         Set the position of the robot to POSITION.
 
         position: a Position object.
         """
-        # TODO: Your code goes here
+        self.position = position
     def setRobotDirection(self, direction):
         """
         Set the direction of the robot to DIRECTION.
 
         direction: integer representing an angle in degrees
         """
-        # TODO: Your code goes here
+        self.direction = direction
 
 
 class Robot(BaseRobot):
@@ -203,7 +206,12 @@ class Robot(BaseRobot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        # TODO: Your code goes here
+        cleanTileAtPosition(self.position)
+        possible_path = self.position.getNewPosition(self.direction, self.speed)
+        while not self.room.isPositionInRoom(possible_path):
+            self.direction = random.randrange(359)
+            possible_path = self.position.getNewPosition(self.direction, self.speed)
+        self.position = possible_path
 
 
 # === Problem 3
@@ -232,7 +240,21 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
                 RandomWalkRobot)
     visualize: a boolean (True to turn on visualization)
     """
-    # TODO: Your code goes here
+    trial_results = []
+    for i in range(num_trials):
+        rr = RectangularRoom(width, height)
+        rob_list = []
+        single_result = []
+        for j in range(num_robots):
+            rob_list.append(robot_type(rr, speed))
+        while (rr.getNumCleanedTiles()/rr.getNumTiles()) < min_coverage:
+            single_result.append((rr.getNumCleanedTiles()/rr.getNumTiles()))
+            for bot in rob_list:
+                bot.updatePositionAndClean()
+        trial_results.append(single_result)
+
+
+
 
 # === Provided function
 def computeMeans(list_of_lists):
