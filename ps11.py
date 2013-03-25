@@ -1,7 +1,9 @@
 # Problem Set 11: Simulating robots
 # Name: c4nn1b4l
+
 from itertools import product
 import math
+import random
 
 # === Provided classes
 
@@ -67,8 +69,6 @@ class RectangularRoom(object):
             raise ValueError('room size must be > 0, and must be an integer')
         self.width = width
         self.height = height
-        #creates a list of tuples
-        self.DirtyBlocks = list(product(list(range(width+1))[1:], list(range(height+1))[1:]))
         self.CleanBlocks = []
     def cleanTileAtPosition(self, pos):
         """
@@ -82,8 +82,6 @@ class RectangularRoom(object):
         else:
             #first add the clean tile to the list
             self.CleanBlocks.append((int(pos.getX()), int(pos.getY())))
-            #remove tile from the dirty list :)
-            self.DirtyBlocks.remove((int(pos.getX()), int(pos.getY())))
     def isTileCleaned(self, m, n):
         """
         Return True if the tile (m, n) has been cleaned.
@@ -104,7 +102,7 @@ class RectangularRoom(object):
 
         returns: an integer
         """
-        return ( len(self.DirtyBlocks) + len(self.CleanBlocks) )
+        return len(list(product(list(range(self.width+1))[1:], list(range(self.height+1))[1:])))
     def getNumCleanedTiles(self):
         """
         Return the total number of clean tiles in the room.
@@ -206,7 +204,7 @@ class Robot(BaseRobot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        cleanTileAtPosition(self.position)
+        self.room.cleanTileAtPosition(self.position)
         possible_path = self.position.getNewPosition(self.direction, self.speed)
         while not self.room.isPositionInRoom(possible_path):
             self.direction = random.randrange(359)
@@ -252,9 +250,11 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
             for bot in rob_list:
                 bot.updatePositionAndClean()
         trial_results.append(single_result)
+    return trial_results
 
 
-
+avg = runSimulation(10, 1.0,15, 20, 0.8, 30, Robot, False)
+print(avg)
 
 # === Provided function
 def computeMeans(list_of_lists):
