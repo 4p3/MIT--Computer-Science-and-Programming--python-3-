@@ -1,9 +1,10 @@
 # Problem Set 11: Simulating robots
 # Name: c4nn1b4l
 
-from itertools import product
+from itertools import product, count
 import math
 import random
+import pylab
 
 # === Provided classes
 
@@ -77,10 +78,7 @@ class RectangularRoom(object):
 
         pos: a Position
         """
-        if not self.isPositionInRoom(pos):
-            raise ValueError('position is not within the room')
-        else:
-            #first add the clean tile to the list
+        if (int(pos.getX()), int(pos.getY())) not in self.CleanBlocks:
             self.CleanBlocks.append((int(pos.getX()), int(pos.getY())))
     def isTileCleaned(self, m, n):
         """
@@ -128,6 +126,7 @@ class RectangularRoom(object):
             return False
         else:
             return True
+
 
 class BaseRobot(object):
     """
@@ -187,6 +186,9 @@ class BaseRobot(object):
         direction: integer representing an angle in degrees
         """
         self.direction = direction
+    def __str__(self):
+        """#for debugging purposes"""
+        return '<X: %f Y: %f>'%((self.position.getX()),  (self.position.getY()))
 
 
 class Robot(BaseRobot):
@@ -204,12 +206,12 @@ class Robot(BaseRobot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        self.room.cleanTileAtPosition(self.position)
         possible_path = self.position.getNewPosition(self.direction, self.speed)
         while not self.room.isPositionInRoom(possible_path):
-            self.direction = random.randrange(359)
+            self.setRobotDirection(random.randrange(359))
             possible_path = self.position.getNewPosition(self.direction, self.speed)
-        self.position = possible_path
+        self.setRobotPosition(possible_path)
+        self.room.cleanTileAtPosition(self.position)
 
 
 # === Problem 3
@@ -238,23 +240,42 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
                 RandomWalkRobot)
     visualize: a boolean (True to turn on visualization)
     """
-    trial_results = []
+    #initialization of variables
+    list_of_results = []
+    dict_of_robots = {}
+    #trial loop
     for i in range(num_trials):
-        rr = RectangularRoom(width, height)
-        rob_list = []
-        single_result = []
-        for j in range(num_robots):
-            rob_list.append(robot_type(rr, speed))
-        while (rr.getNumCleanedTiles()/rr.getNumTiles()) < min_coverage:
-            single_result.append((rr.getNumCleanedTiles()/rr.getNumTiles()))
-            for bot in rob_list:
-                bot.updatePositionAndClean()
-        trial_results.append(single_result)
-    return trial_results
+        rectroom = RectangularRoom(width, height)
+        for u in range(num_robots):
+            dict_of_robots[u] = robot_type(rectroom, speed)
+        sing_result = []
+        while (rectroom.getNumCleanedTiles() / rectroom.getNumTiles()) < min_coverage:
+            for robi in dict_of_robots.keys():
+                sing_result.append((rectroom.getNumCleanedTiles() / rectroom.getNumTiles()))
+                dict_of_robots[robi].updatePositionAndClean()
+        list_of_results.append(sing_result)
+    return list_of_results
 
 
-avg = runSimulation(10, 1.0,15, 20, 0.8, 30, Robot, False)
-print(avg)
+# print("debugging simulator")
+# rr = RectangularRoom(5,5)
+# rob_dict = {}
+# for j in range(2):
+#     rob_dict[j] = Robot(rr, 1)
+# for i in range(45):
+#     for robi in rob_dict.keys():
+#         print(rob_dict[robi])
+#         rob_dict[robi].updatePositionAndClean()
+#         print(rob_dict[robi])
+#     print(rr.getNumCleanedTiles()/rr.getNumTiles(), i,"-edik iteracio")
+
+
+avg = runSimulation(1, 1.0, 5, 5, 1, 100, Robot, False)
+teszt = []
+for item in avg:
+    teszt.append(len(item))
+print(teszt)
+print(sum(teszt)/len(teszt))
 
 # === Provided function
 def computeMeans(list_of_lists):
