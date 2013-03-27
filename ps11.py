@@ -186,9 +186,9 @@ class BaseRobot(object):
         direction: integer representing an angle in degrees
         """
         self.direction = direction
-    def __str__(self):
-        """#for debugging purposes"""
-        return '<X: %f Y: %f>'%((self.position.getX()),  (self.position.getY()))
+    # def __str__(self):
+    #     """#for debugging purposes"""
+    #     return '<X: %f Y: %f>'%((self.position.getX()),  (self.position.getY()))
 
 
 class Robot(BaseRobot):
@@ -206,12 +206,29 @@ class Robot(BaseRobot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        possible_path = self.position.getNewPosition(self.direction, self.speed)
-        while not self.room.isPositionInRoom(possible_path):
-            self.setRobotDirection(random.randrange(359))
+        if self.speed < 1:
             possible_path = self.position.getNewPosition(self.direction, self.speed)
-        self.setRobotPosition(possible_path)
-        self.room.cleanTileAtPosition(self.position)
+            while not self.room.isPositionInRoom(possible_path):
+                self.setRobotDirection(random.randrange(359))
+                possible_path = self.position.getNewPosition(self.direction, self.speed)
+            self.setRobotPosition(possible_path)
+            self.room.cleanTileAtPosition(self.position)
+        else:
+            possible_moves_on_one_clock = int(self.speed)
+            for i in range(possible_moves_on_one_clock):
+                possible_path = self.position.getNewPosition(self.direction, 1)
+                while not self.room.isPositionInRoom(possible_path):
+                    self.setRobotDirection(random.randrange(359))
+                    possible_path = self.position.getNewPosition(self.direction, 1)
+                self.setRobotPosition(possible_path)
+                self.room.cleanTileAtPosition(self.position)
+            possible_path = self.position.getNewPosition(self.direction, (self.speed - possible_moves_on_one_clock))
+            while not self.room.isPositionInRoom(possible_path):
+                self.setRobotDirection(random.randrange(359))
+                possible_path = self.position.getNewPosition(self.direction, (self.speed - possible_moves_on_one_clock))
+            self.setRobotPosition(possible_path)
+            self.room.cleanTileAtPosition(self.position)
+
 
 
 # === Problem 3
@@ -242,39 +259,50 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     """
     #initialization of variables
     list_of_results = []
-    dict_of_robots = {}
+    
     #trial loop
     for i in range(num_trials):
-        rectroom = RectangularRoom(width, height)
-        for u in range(num_robots):
-            dict_of_robots[u] = robot_type(rectroom, speed)
-        sing_result = []
-        while (rectroom.getNumCleanedTiles() / rectroom.getNumTiles()) < min_coverage:
-            for robi in dict_of_robots.keys():
-                sing_result.append((rectroom.getNumCleanedTiles() / rectroom.getNumTiles()))
-                dict_of_robots[robi].updatePositionAndClean()
-        list_of_results.append(sing_result)
+        list_of_results.append(singleSimulation(num_robots, speed, width, height, min_coverage, robot_type))
     return list_of_results
 
 
+def singleSimulation(num_robots, speed, width, height, min_coverage, robot_type):
+    dict_of_robots = {}
+    sing_result = []
+    rectroom = RectangularRoom(width, height)
+    for u in range(num_robots):
+            dict_of_robots[u] = robot_type(rectroom, speed)
+    while (rectroom.getNumCleanedTiles() / rectroom.getNumTiles()) < min_coverage:
+        for robi in dict_of_robots.keys():
+            dict_of_robots[robi].updatePositionAndClean()
+            if (rectroom.getNumCleanedTiles() / rectroom.getNumTiles()) >= min_coverage:
+                return sing_result
+        sing_result.append((rectroom.getNumCleanedTiles() / rectroom.getNumTiles()))
+    return sing_result
+
 # print("debugging simulator")
 # rr = RectangularRoom(5,5)
+# teszt_lista = []
 # rob_dict = {}
-# for j in range(2):
-#     rob_dict[j] = Robot(rr, 1)
-# for i in range(45):
+# for j in range(1):
+#     rob_dict[j] = Robot(rr, 3)
+# while rr.getNumCleanedTiles()/rr.getNumTiles() < 1:
 #     for robi in rob_dict.keys():
 #         print(rob_dict[robi])
 #         rob_dict[robi].updatePositionAndClean()
+#         # print("rrclean: ", rr.CleanBlocks)
 #         print(rob_dict[robi])
-#     print(rr.getNumCleanedTiles()/rr.getNumTiles(), i,"-edik iteracio")
+#     teszt_lista.append((rr.getNumCleanedTiles()/rr.getNumTiles()))
+#     print(rr.getNumCleanedTiles()/rr.getNumTiles())
 
+# print(len(teszt_lista))
 
 avg = runSimulation(1, 1.0, 5, 5, 1, 100, Robot, False)
 teszt = []
 for item in avg:
     teszt.append(len(item))
 print(teszt)
+print(len(teszt))
 print(sum(teszt)/len(teszt))
 
 # === Provided function
