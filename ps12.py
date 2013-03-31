@@ -77,7 +77,7 @@ class SimpleVirus(object):
         if random.random() < (self.maxBirthProb * (1 - popDensity)):
             return SimpleVirus(self.maxBirthProb, self.clearProb)
         else: 
-            raise NoChildException
+            NoChildException()
 
 class SimplePatient(object):
     """
@@ -123,23 +123,27 @@ class SimplePatient(object):
         returns: the total virus population at the end of the update (an
         integer)
         """
-        #decision for every virus instances, and marking the unlucky ones
-        for vir in self.viruses:
+        #decision for every virus instances, and deleting the unlucky ones
+        mutableViruses = self.viruses.copy()
+        deleteViruses = []
+        for vir in mutableViruses:
             if vir.doesClear():
-                vir = 0
-        #removing viruses with bad luck
-        for i in range(len(self.viruses))
-            if self.viruses[i] == 0:
-                del self.viruses[i]
-        #calculate the current population density
-        self.popDensity = (self.getTotalPop() / self.maxPop)
-        #the reproduction cycle, initializing helper variable
+                deleteViruses.append(vir)
+        for dvir in deleteViruses:
+            if dvir in self.viruses:
+                mutableViruses.remove(dvir)
+        #updating self.viruses
+        self.viruses = mutableViruses
+        #calculating population density
+        popDensity = (self.getTotalPop() / self.maxPop)
         newViruses = []
         for vir in self.viruses:
-            newViruses.append(vir.reproduce(self.popDensity))
-        #concatenating the two virus list
+            newVir = vir.reproduce(popDensity)
+            if newVir == SimpleVirus:
+                newViruses.append(newVir)
         self.viruses += newViruses
-        
+        return self.getTotalPop()
+
 
 #
 # PROBLEM 2
@@ -153,8 +157,22 @@ def problem2():
     Instantiates a patient, runs a simulation for 300 timesteps, and plots the
     total virus population as a function of time.    
     """
-    # TODO    
+    virusPopOverTime = []
+    startingVirusPopulation = []
+    for i in range(100):
+        startingVirusPopulation.append(SimpleVirus(0.1, 0.05))
+    badLuckBrian = SimplePatient(startingVirusPopulation, 1000)
+    for j in range(300):
+        virusPopOverTime.append(badLuckBrian.update())
+    pylab.plot(virusPopOverTime)
+    pylab.title('Change of total virus population over time')
+    pylab.xlabel('Time')
+    pylab.ylabel('Number of viruses')
+    pylab.show()
+
     
+problem2()
+
 #
 # PROBLEM 3
 #
