@@ -50,7 +50,7 @@ class SimpleVirus(object):
         returns True with probability self.clearProb and otherwise returns
         False.
         """
-        if random.random() < self.clearProb:
+        if random.random() <= self.clearProb:
             return True
         else:
             return False
@@ -74,10 +74,10 @@ class SimpleVirus(object):
         maxBirthProb and clearProb values as this virus. Raises a
         NoChildException if this virus particle does not reproduce.               
         """
-        if random.random() < (self.maxBirthProb * (1 - popDensity)):
+        if random.random() <= (self.maxBirthProb * (1 - popDensity)):
             return SimpleVirus(self.maxBirthProb, self.clearProb)
         else: 
-            NoChildException()
+            raise NoChildException()
 
 class SimplePatient(object):
     """
@@ -128,20 +128,15 @@ class SimplePatient(object):
         deleteViruses = []
         for vir in mutableViruses:
             if vir.doesClear():
-                deleteViruses.append(vir)
-        for dvir in deleteViruses:
-            if dvir in self.viruses:
-                mutableViruses.remove(dvir)
-        #updating self.viruses
-        self.viruses = mutableViruses
+                self.viruses.remove(vir)
         #calculating population density
-        popDensity = (self.getTotalPop() / self.maxPop)
-        newViruses = []
-        for vir in self.viruses:
-            newVir = vir.reproduce(popDensity)
-            if newVir == SimpleVirus:
-                newViruses.append(newVir)
-        self.viruses += newViruses
+        popDensity = (len(self.viruses) / self.maxPop)
+        mutableViruses = self.viruses.copy()
+        for vir in mutableViruses:
+            try:
+                self.viruses.append(vir.reproduce(popDensity))
+            except NoChildException:
+                pass
         return self.getTotalPop()
 
 
@@ -171,6 +166,7 @@ def problem2():
     pylab.show()
 
     
+problem2()
 #
 # PROBLEM 3
 #
@@ -391,7 +387,7 @@ class Patient(SimplePatient):
         popDensity = (self.getTotalPop() / self.maxPop)
         newViruses = []
         for vir in self.viruses:
-            newVir = vir.reproduce(popDensity)
+            newVir = vir.reproduce(popDensity, self.drugs)
             if newVir == ResistantVirus:
                 newViruses.append(newVir)
         self.viruses += newViruses
@@ -411,7 +407,24 @@ def problem4():
     total virus population vs. time  and guttagonol-resistant virus population
     vs. time are plotted
     """
-    # TODO
+    timestepwodrugs = 15
+    tiestepwdrugs = 275
+    virusPopOverTime = []
+    startingVirusPopulation = []
+    for i in range(100):
+        startingVirusPopulation.append(ResistantVirus(0.1, 0.05, {'guttagonol':False}, 0.005))
+    badLuckBrian = Patient(startingVirusPopulation, 1000)
+    for j in range(timestepwodrugs):
+        virusPopOverTime.append(badLuckBrian.update())
+    badLuckBrian.addPrescription('guttagonol')
+    for j in range(tiestepwdrugs):
+        virusPopOverTime.append(badLuckBrian.update())
+    pylab.plot(virusPopOverTime)
+    pylab.title('Change of total virus population over time')
+    pylab.xlabel('Time')
+    pylab.ylabel('Number of viruses')
+    pylab.show()
+
 
 #
 # PROBLEM 5
