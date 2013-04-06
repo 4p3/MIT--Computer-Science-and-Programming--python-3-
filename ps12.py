@@ -166,7 +166,6 @@ def problem2():
     pylab.show()
 
     
-problem2()
 #
 # PROBLEM 3
 #
@@ -260,32 +259,32 @@ class ResistantVirus(SimpleVirus):
         maxBirthProb and clearProb values as this virus. Raises a
         NoChildException if this virus particle does not reproduce.         
         """
-        #if the virus reistant to any drug in, it should reproduce
-        canIReplicate = False
-        for drug in activeDrugs:
-            if drug not in self.resistances.keys() or self.resistances[drug] == True:
-                canIReplicate = True
-        willIReplicate = False
-        if canIReplicate:
-            willIReplicate = (random.random() < (self.maxBirthProb * (1 - popDensity)))
-        if canIReplicate and willIReplicate:
-            childResist = {}
-            #inheritance from parent virus
-            for resis in self.resistances.keys():
-                if (random.random() < (1 - self.mutProb)) and self.resistances[resis]:
-                    childResist[resis] = self.resistances[resis]
-                else:
-                    childResist[resis] = False
-            #developing new traits by mutation
-            for dres in activeDrugs:
-                if (random.random() < self.mutProb):
-                    childResist[dres] = not childResist[dres]
-                elif dres not in childResist.keys():
-                    childResist[dres] = False
-            return ResistantVirus(self.maxBirthProb, self.clearProb, childResist, self.mutProb)
+        #list of drugs the virus has resistance to
+        rsa = []
+        for drug in self.resistances.keys():
+            if self.resistances[drug] == True:
+                rsa.append(drug)
+        #check for resistance fro currently used drugs
+        if len(activeDrugs) != 0:
+            chance = len(set(rsa) & set(activeDrugs))
         else:
-            NoChildException()
-
+            chance = 1
+        #check if we should replicate
+        if random.random() < self.maxBirthProb * (1- popDensity):
+            secChance = True
+        else:
+            secChance = False
+        #replication
+        if secChance and chance != 0:
+            resistances = {}
+            for drug in self.resistances.keys():
+                if random.random() < (1 - self.mutProb):
+                    resistances[drug] = self.resistances[drug]
+                else:
+                    resistances[drug] = not self.resistances[drug]
+            return ResistantVirus(self.maxBirthProb, self.clearProb, resistances, self.mutProb)
+        else:
+            raise NoChildException()
             
 class Patient(SimplePatient):
     """
@@ -318,9 +317,7 @@ class Patient(SimplePatient):
 
         postcondition: list of drugs being administered to a patient is updated
         """
-        if newDrug in self.drugs:
-            pass
-        else:
+        if newDrug not in self.drugs:
             self.drugs.append(newDrug)
 
     def getPrescriptions(self):
@@ -347,7 +344,7 @@ class Patient(SimplePatient):
         for virus in self.viruses:
             resForSmg = False
             for drug in drugResist:
-                if virus.getResistance():
+                if virus.getResistance(drug):
                     resForSmg = True
             if resForSmg:
                 thePop += 1
@@ -374,23 +371,17 @@ class Patient(SimplePatient):
         """
         #decision for every virus instances, and deleting the unlucky ones
         mutableViruses = self.viruses.copy()
-        deleteViruses = []
         for vir in mutableViruses:
             if vir.doesClear():
-                deleteViruses.append(vir)
-        for dvir in deleteViruses:
-            if dvir in self.viruses:
-                mutableViruses.remove(dvir)
-        #updating self.viruses
-        self.viruses = mutableViruses
+                self.viruses.remove(vir)
         #calculating population density
-        popDensity = (self.getTotalPop() / self.maxPop)
-        newViruses = []
-        for vir in self.viruses:
-            newVir = vir.reproduce(popDensity, self.drugs)
-            if newVir == ResistantVirus:
-                newViruses.append(newVir)
-        self.viruses += newViruses
+        popDensity = (len(self.viruses) / self.maxPop)
+        mutableViruses = self.viruses.copy()
+        for vir in mutableViruses:
+            try:
+                self.viruses.append(vir.reproduce(popDensity, self.getPrescriptions()))
+            except NoChildException:
+                pass
         return self.getTotalPop()
 
 #
@@ -407,25 +398,28 @@ def problem4():
     total virus population vs. time  and guttagonol-resistant virus population
     vs. time are plotted
     """
-    timestepwodrugs = 15
-    tiestepwdrugs = 275
     virusPopOverTime = []
     startingVirusPopulation = []
     for i in range(100):
         startingVirusPopulation.append(ResistantVirus(0.1, 0.05, {'guttagonol':False}, 0.005))
     badLuckBrian = Patient(startingVirusPopulation, 1000)
-    for j in range(timestepwodrugs):
+
+    for j in range(150):
         virusPopOverTime.append(badLuckBrian.update())
     badLuckBrian.addPrescription('guttagonol')
-    for j in range(tiestepwdrugs):
+    for j in range(150):
         virusPopOverTime.append(badLuckBrian.update())
+        #print(badLuckBrian.getResistPop(['guttagonol']))
+
+
     pylab.plot(virusPopOverTime)
-    pylab.title('Change of total virus population over time')
+    pylab.title('Change of total advanced virus population over time')
     pylab.xlabel('Time')
     pylab.ylabel('Number of viruses')
     pylab.show()
 
 
+problem4()
 #
 # PROBLEM 5
 #
