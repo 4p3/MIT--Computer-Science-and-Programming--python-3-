@@ -398,6 +398,7 @@ def problem4():
     total virus population vs. time  and guttagonol-resistant virus population
     vs. time are plotted
     """
+    resPopOvertime = []
     virusPopOverTime = []
     startingVirusPopulation = []
     for i in range(100):
@@ -406,20 +407,21 @@ def problem4():
 
     for j in range(150):
         virusPopOverTime.append(badLuckBrian.update())
+        resPopOvertime.append(badLuckBrian.getResistPop(['guttagonol']))
     badLuckBrian.addPrescription('guttagonol')
     for j in range(150):
         virusPopOverTime.append(badLuckBrian.update())
-        #print(badLuckBrian.getResistPop(['guttagonol']))
-
-
-    pylab.plot(virusPopOverTime)
+        resPopOvertime.append(badLuckBrian.getResistPop(['guttagonol']))
+        
+    pylab.plot(virusPopOverTime, label = 'Total')
+    pylab.plot(resPopOvertime, color = 'g', label = 'Resistant viruses')
+    pylab.legend()
     pylab.title('Change of total advanced virus population over time')
     pylab.xlabel('Time')
     pylab.ylabel('Number of viruses')
     pylab.show()
 
 
-problem4()
 #
 # PROBLEM 5
 #
@@ -435,8 +437,40 @@ def problem5():
     150, 75, 0 timesteps (followed by an additional 150 timesteps of
     simulation).    
     """
-    # TODO
-    
+    tbh = []
+    delays = [0, 75, 150, 300]
+    #do the test for each dealy
+    for test in range(len(delays)):
+        avg = []
+        #repeat each test for 100 times, to get the average sometime in the future
+        for reh in range(200):
+            #initiate viruses
+            startingVirusPopulation = []
+            for i in range(100):
+                startingVirusPopulation.append(ResistantVirus(0.1, 0.05, {'guttagonol':False}, 0.005))
+            #initate patient
+            badLuckBrian = Patient(startingVirusPopulation, 1000)
+            virpop = 0
+            #run the simulation without treatment
+            for i in range(delays[test]):
+                virpop = badLuckBrian.update()
+            #initiate treatment
+            badLuckBrian.addPrescription('guttagonol')
+            #run the simulation with treatment
+            for j in range(150):
+                virpop = badLuckBrian.update()
+            avg.append(virpop)
+        #create the histogram
+        pylab.figure()
+        pylab.hist(avg)
+        hititle = '200 patients, drug administered with ' + str(delays[test]) + 'cycles delay'
+        pylab.title(hititle)
+        pylab.xlabel('Total virus populations')
+        pylab.ylabel('Number of patients')
+    #draw the histogram
+    pylab.show()
+
+
 #
 # PROBLEM 6
 #
@@ -452,7 +486,41 @@ def problem6():
     150, 75, 0 timesteps between adding drugs (followed by an additional 150
     timesteps of simulation).
     """
-    # TODO
+    befAdDrug = [300, 150, 75, 0]
+    for i in range(len(befAdDrug)):
+        avg = []
+        for k in range(30):
+            #initiate startin virus population
+            startingVirusPopulation = []
+            for l in range(100):
+                startingVirusPopulation.append(ResistantVirus(0.1, 0.05, {'guttagonol':False, 'grimpex':False}, 0.005))
+            #initiate patient
+            badLuckBrian = Patient(startingVirusPopulation, 1000)
+            virpop = 0
+            #run the simulation for 150 time step
+            for j in range(150):
+                    virpop = badLuckBrian.update()
+            #administer guttagonol for the patient
+            badLuckBrian.addPrescription('guttagonol')
+            #delay
+            for j in range(befAdDrug[i]):
+                virpop = badLuckBrian.update()
+            #administer the second drug (grimpex)
+            badLuckBrian.addPrescription('grimpex')
+            #run the simulation for additional 150 steps
+            for j in range(150):
+                    virpop = badLuckBrian.update()
+            avg.append(virpop)
+         #create the histogram
+        pylab.figure()
+        pylab.hist(avg)
+        hititle = 'Delay: '+ str(befAdDrug[i])
+        pylab.title(hititle)
+        pylab.xlabel('Total virus populations')
+        pylab.ylabel('Number of patients')
+    #draw the histogram
+    pylab.show()
+
 
 #
 # PROBLEM 7
@@ -467,4 +535,72 @@ def problem7():
     simulation with a 300 time step delay between administering the 2 drugs and
     a simulations for which drugs are administered simultaneously.        
     """
-    # TODO
+    startingVirusPopulation = []
+    for l in range(100):
+        startingVirusPopulation.append(ResistantVirus(0.1, 0.05, {'guttagonol':False, 'grimpex':False}, 0.005))
+    badLuckBrian = Patient(startingVirusPopulation, 1000)
+    virpop = []
+    res_gut = []
+    res_grim = []
+    res_ova = []
+    for j in range(150):
+        virpop.append(badLuckBrian.update())
+        res_gut.append(badLuckBrian.getResistPop(['guttagonol']))
+        res_grim.append(badLuckBrian.getResistPop(['grimpex']))
+        res_ova.append(badLuckBrian.getResistPop(['guttagonol','grimpex']))
+    badLuckBrian.addPrescription('guttagonol')
+    for j in range(300):
+        virpop.append(badLuckBrian.update())
+        res_gut.append(badLuckBrian.getResistPop(['guttagonol']))
+        res_grim.append(badLuckBrian.getResistPop(['grimpex']))
+        res_ova.append(badLuckBrian.getResistPop(['guttagonol','grimpex']))
+    badLuckBrian.addPrescription('grimpex')
+    for j in range(150):
+        virpop.append(badLuckBrian.update())
+        res_gut.append(badLuckBrian.getResistPop(['guttagonol']))
+        res_grim.append(badLuckBrian.getResistPop(['grimpex']))
+        res_ova.append(badLuckBrian.getResistPop(['guttagonol','grimpex']))
+    pylab.plot(virpop, label = 'Total virus population')
+    pylab.plot(res_gut, color = 'g', label = 'guttagonol-resistant')
+    pylab.plot(res_grim, color = 'y', label = 'grimpex-resistant')
+    pylab.plot(res_ova, color = 'r', label = 'resistant')
+    pylab.legend()
+    pylab.title('150-300-150')
+    pylab.xlabel('Time')
+    pylab.ylabel('Number of viruses')
+    pylab.figure()
+    startingVirusPopulation = []
+    for l in range(100):
+        startingVirusPopulation.append(ResistantVirus(0.1, 0.05, {'guttagonol':False, 'grimpex':False}, 0.005))
+    badLuckBrian = Patient(startingVirusPopulation, 1000)
+    virpop = []
+    res_gut = []
+    res_grim = []
+    res_ova = []
+    for j in range(150):
+        virpop.append(badLuckBrian.update())
+        res_gut.append(badLuckBrian.getResistPop(['guttagonol']))
+        res_grim.append(badLuckBrian.getResistPop(['grimpex']))
+        res_ova.append(badLuckBrian.getResistPop(['guttagonol','grimpex']))
+    badLuckBrian.addPrescription('guttagonol')
+    badLuckBrian.addPrescription('grimpex')
+    for j in range(150):
+        virpop.append(badLuckBrian.update())
+        res_gut.append(badLuckBrian.getResistPop(['guttagonol']))
+        res_grim.append(badLuckBrian.getResistPop(['grimpex']))
+        res_ova.append(badLuckBrian.getResistPop(['guttagonol','grimpex']))
+    pylab.plot(virpop, label = 'Total virus population')
+    pylab.plot(res_gut, color = 'g', label = 'guttagonol-resistant')
+    pylab.plot(res_grim, color = 'y', label = 'grimpex-resistant')
+    pylab.plot(res_ova, color = 'r', label = 'resistant')
+    pylab.legend()
+    pylab.title('150-150')
+    pylab.xlabel('Time')
+    pylab.ylabel('Number of viruses')
+    pylab.show()
+
+
+#problem 8
+"""
+patients addPrescription method should ignore the prescription for some probability.
+"""
